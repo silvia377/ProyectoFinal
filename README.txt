@@ -1,1 +1,1 @@
-Este es el proyecto final 
+Punto de venta
