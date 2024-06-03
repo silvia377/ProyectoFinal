@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block titulo %}
+	Lista de usuarios
+{% endblock titulo %}
+{% block contenido %}
+    <script src="{% static 'js/funciones.js' %}"></script>
+    <h1>Lista de usuarios</h1>
+    {% if messages %}
+      {% for message in messages %}
+        {% if message.level == DEFAULT_MESSAGE_LEVELS_ERROR %}
+          <div class="alert alert-danger">
+            {{message}}
+          </div>
+        {% else %}
+          <div class="alert alert-success">
+            {{message}}
+          </div>
+        {% endif %}
+      {% endfor %}
+    {% endif %} 
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Nombre de usuario</th>
+                <th>Nombre</th>
+                <th>Apellido</th>
+                <th>Telefono</th>
+                <th>E-mail</th>
+                <th>Foto</th>
+                <th>RFC</th>
+                <th>CURP</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for usuario in object_list %}
+                <tr>
+                    <td>{{usuario.username}}</td>
+                    <td>{{usuario.first_name}}</td>
+                    <td>{{usuario.last_name}}</td>
+                    <td>{{usuario.datos.telefono}}</td>
+                    <td>{{usuario.datos.email}}</td>
+                    <td><img width="240" src="{{MEDIA_URL}}{{usuario.datos.foto}}" alt="{{usuario.datos.foto}}"></td>
+                    <td>{{usuario.datos.rfc}}</td>
+                    <td>{{usuario.datos.curp}}</td>
+                    <td><button type="button" class="btn btn-secondary" data-usuario="{{usuario.id}}" data-toggle="modal" onclick="asignaUsuario('{{usuario.id}}')" data-target="#modal-grupos">
+                        Grupos
+                    </button></td>
+                    <td><a class="btn btn-outline-secondary" href="#">Editar</a></td>
+                </tr>
+            {% endfor %}
+        </tbody>	
+    </table>
+
+<div class="modal fade" id="modal-grupos">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title">Asignar grupos</h4>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <form action="{% url 'asignar_grupos' %}" method="post">
+        {% csrf_token %}
+        <div class="modal-body">
+          {% for grupo in grupos %}
+          <p>
+            <input type="checkbox" name="{{grupo.id}}"> {{grupo.name}}
+          </p>
+          {% endfor %}
+        </div>
+        <input type="hidden" name="usuario" id="idUsuario">
+        <div class="modal-footer justify-content-between">
+          <button type="button" class="btn btn-danger" data-dismiss="modal">Cancelar</button>
+          <button type="submit" class="btn btn-success">Asignar</button>
+        </div>
+        </form>
+      </div>
+      <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+  </div>
+  <!-- /.modal -->
+
+{% endblock contenido %}
