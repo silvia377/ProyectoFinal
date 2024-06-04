@@ -26,24 +26,25 @@
             </div>
         </div>
     </div>
+
     <div class="row">
         <div class="col-md-12">
             <h3 class="text-center">Ventas <i class="fas fa-hand-holding-usd"></i></h3>
+            <div class="row">
                 <div class="col-md-3 pb-2">
-                    <a href="{% url 'AddVenta' %}" data-toggle="modal" data-dismiss="modal">
+                    <a href="{% url 'AddVenta' %}">
                         <button type="button" class="btn btn-success">
                             Agregar Venta
                             <i class="fas fa-plus-circle"></i>
                         </button>
                     </a>
                 </div>
-                </h3>
             </div>
         </div>
     </div>
+
     <div class="row">
         <div class="col-md-12">
-            </div>
             <div class="card card-body" style="overflow:scroll">
                 <table class="table table-hover table-primary" id="myTable">
                     <thead>
@@ -52,11 +53,9 @@
                             <th>Fecha</th>
                             <th>Cliente $</th>
                             <th>Total</th>
-                            <th>¡Pagado?</th>
+                            <th>¿Pagado?</th>
                             <th>Comentarios</th>
                             <th>Opciones</th>
-
-
                         </tr>
                     </thead>
                     <tbody class="text-dark">
@@ -68,11 +67,10 @@
                             <td>{{i.total}}</td>
                             <td>{{i.pagado}}</td>
                             <td>{{i.comentarios}}</td>
-
-                            <td>                                
-                                <button onclick="eliminarProducto('{{i.id}}')" class="btn btn-dark-outline btn-sm"
-                                    data-toggle="modal" href="#EliminarPersonalModal"><img
-                                        src="{% static 'index/img/delete.png' %}" alt="Error" width="30"></button>
+                            <td>
+                                <button onclick="eliminarProducto('{{i.id}}')" class="btn btn-dark-outline btn-sm" data-toggle="modal" href="#EliminarPersonalModal">
+                                    <img src="{% static 'index/img/delete.png' %}" alt="Error" width="30">
+                                </button>
                             </td>
                         </tr>
                         {% endfor %}
@@ -81,4 +79,34 @@
             </div>
         </div>
     </div>
+</div>
 {% endblock %}
+
+<!-- Incluye las dependencias necesarias -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi Proyecto Django</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+</head>
+<body>
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <!-- Popper.js -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <!-- Bootstrap JS -->
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <!-- Script para eliminar producto -->
+    <script>
+        function eliminarProducto(id) {
+            document.getElementById('id_producto_eliminar').value = id;
+        }
+    </script>
+</body>
+</html>
