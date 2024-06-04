@@ -11,18 +11,14 @@ import os
 import json
 # Create your views here.
 def ventas_view(request):
-    ventas=Egreso.objects.all()
-    num_ventas=len(ventas)
-    context={
-        'ventas':ventas,
-        'num_ventas':num_ventas
-    }
-
-    num_ventas = 156
+    ventas = Egreso.objects.all()
+    num_ventas = len(ventas)
     context = {
+        'ventas': ventas,
         'num_ventas': num_ventas
     }
-    return render (request, 'ventas.html', context)
+    return render(request, 'ventas.html', context)
+
 
 def clientes_view(request):
     clientes = Cliente.objects.all()
@@ -215,4 +211,55 @@ def delete_producto_view(request):
         producto.delete()
     return redirect('Productos')
 
+
+class AddVentas(ListView):
+    template_name = 'add_ventas.html'
+    model = Egreso
+
+    def dispatch(self, request, *args, **kwargs):
+        return super().dispatch(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        data = {'success': False}
+        try:
+            action = request.POST.get('action', '')
+            if action == 'autocomplete':
+                data = []
+                term = request.POST.get("term", "")
+                for i in Producto.objects.filter(descripcion__icontains=term)[:10]:
+                    item = i.toJSON()
+                    item['value'] = i.descripcion
+                    data.append(item)
+            elif action == 'save':
+                total_pagado = sum(float(request.POST.get(method, 0)) for method in ["efectivo", "tarjeta", "transferencia", "vales", "otro"])
+                fecha = request.POST.get("fecha", "")
+                id_cliente = int(request.POST.get("id_cliente", 0))
+                cliente_obj = Cliente.objects.get(pk=id_cliente)
+                datos = json.loads(request.POST.get("verts", "{}"))
+                total_venta = float(datos.get("total", 0))
+                ticket = int(request.POST.get("ticket", 0)) == 1
+                desglosar_iva = int(request.POST.get("desglosar", 0)) == 1
+                comentarios = request.POST.get("comentarios", "")
+
+                nueva_venta = Egreso(
+                    fecha_pedido=fecha,
+                    cliente=cliente_obj,
+                    total=total_venta,
+                    pagado=total_pagado,
+                    comentarios=comentarios,
+                    ticket=ticket,
+                    desglosar=desglosar_iva
+                )
+                nueva_venta.save()
+                data['success'] = True
+                data['venta_id'] = nueva_venta.id
+        except Exception as e:
+            data['error'] = str(e)
+        return JsonResponse(data, safe=False)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["productos_lista"] = Producto.objects.all()
+        context["clientes_lista"] = Cliente.objects.all()
+        return context
 
